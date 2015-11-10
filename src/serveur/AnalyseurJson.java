@@ -11,7 +11,7 @@ public class AnalyseurJson extends Analyseur {
 
     public void analyser(String requete ){
         try {
-            // ici il faut faire en sorte qu'on escape le string
+            // ici il faut faire en sorte qu'on escape le string test
             this.requete = new JSONObject(requete);
         } catch (JSONException e) {
             e.printStackTrace();
