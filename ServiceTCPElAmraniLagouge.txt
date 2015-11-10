@@ -1,0 +1,215 @@
+
+Services offerts par le serveur :
+
+Ajouter un nouveau nom et zéro ou plusieurs surnoms associés.
+Ajouter un ou plusieur surnoms à un nom déjà existant.
+Supprimer un ou plusieurs noms existants.
+Supprimer un ou plusieurs surnoms dans la liste d'un nom existant.
+Modifier un nom déjà existant.
+Modifier un surnom déjà existant.
+Recherche et affichage de la liste des surnoms associée à un nom.
+Recherche et affichage du nom associé à un surnom.
+Afficher la totalité des informations situées sur le serveur
+Se déconnecter.
+
+------------> Description du protocole d'application :
+Deux personnes ne peuvent pas avoir le même nom .
+Deux personnes ne peuvent pas avoir le même surnom .
+Une personne peut avoi plusieurs surnoms .
+
+Le serveur est sur le port 4242
+
+Les chaînes de caractères sont au format JSON .
+
+Les paramètres sont écrits en majuscule .
+
+Les mots-clés sont en minuscule.
+
+
+############################################################################################################################
+Ajouter un nouveau nom et zéro ou plusieurs surnoms associés
+
+Client																														|	Serveur
+ {																																|{
+ "request":"add_name"																							|"response":"add_name_ok"
+ "name":"NAME"																										|}
+ "nicknames":{"NICKNAME_1","NICKNAME_2",........."NICKNAME_ N"}  	|
+ }
+
+==> erreur : nom existe déjà
+
+      																														|	Serveur
+ 														   																		|{
+                            																			|"response":"add_name_err_existing_name"
+                            																			|}
+                                                          		   	|
+
+############################################################################################################################
+Ajouter un ou plusieur surnoms à un nom déjà existant
+
+Client																														|	Serveur
+ {																																|{
+ "request":"add_nicknames"																				|"response":"add_nicknames_ok"
+ "name":"NAME"																										|}
+ "nicknames":{"NICKNAME_1","NICKNAME_2",........."NICKNAME_ N"}  	|
+ }
+
+ ==> erreur : nom n'existe pas
+
+      																														|	Serveur
+  																																|{
+  														                        						|"response":"add_nicknames_err_non_existing_name"
+  																										            |}
+                                                             			|
+
+############################################################################################################################
+Supprimer un ou plusieurs noms existants
+
+Client																														|	Serveur
+ {																																|{
+ "request":"remove_names"																					|"response":"remove_names_ok"
+ "names":{"NAME_1","NAME_2",........."NAME_ N"}  			|}
+ }                                                                |
+
+ ==> erreur : un de ses nom n'existe pas (ou tous),
+ ==> dans ce cas on supprime les noms qui existent et on envoie un message d'erreur qui indique le(s) noms qui causent l'erreur
+
+      																														|	Serveur
+  																																|{
+                          																				|"response":"remove_names_err_non_existing_names"
+                                            											|"non_existing_names" : {"NAME_1","NAME_2",.......,"NAME_N"}
+                                                                  |}
+
+
+############################################################################################################################
+Supprimer un ou plusieurs surnoms dans la liste d'un nom existant
+
+Client																														|	Serveur
+ {																																|{
+ "request":"remove_nicknames"																			|"response":"remove_nicknames_ok"
+ "name"  :"NAME"																									|{
+ "nicknames":{"NICKNAME_1","NICKNAME_2",........."NICKNAME_ N"}  	|
+ }
+
+==> erreur 1 : un de ses nicknames n'existe pas (ou tous),
+==> dans ce cas on supprime les nicknames qui existent et on envoie un message d'erreur qui indique le(s) nicknames qui causent l'erreur
+
+ 																								       			|	Serveur
+ 																											      |{
+                        																	  |"response":"remove_nicknames_err_non_existing_nicknames"
+ 												           												  |"non_existing_nicknames": {"NICKNAME_1","NICKNAME_2",..."NICKNAME_ N"}
+                                                					  |}
+
+
+==> erreur 2 : le nom n'existe pas, dans ce qu'on on renvoie un message d'erreur
+
+																														|	Serveur
+																														|{
+                          																	|"response":"remove_nicknames_err_non_existing_name"
+													           												|}
+
+############################################################################################################################
+ Modifier un nom déjà existant
+
+ Client																														|	Serveur
+  {																																|{
+  "request":"modify_name"																					|"response":"modify_name_ok"
+  "name"  :"NAME"																									|}
+  "new_name":"NEW_NAME"																						|
+  }
+
+	==> erreur : nom n'existe pas, dans ce cas on renvoie un message d'erreur
+
+							     																								|	Serveur
+																																	|{
+									                       													|"response":"modify_name_err_non_existing_name"
+																				              						|}
+																					                        |
+
+############################################################################################################################
+Modifier un surnom déjà existant
+
+Client                                                            | Serveur
+ {                                                                |{
+ "request":"modify_nickname"                                      |"response":"modify_nickname_ok"
+ "name"  :"NAME"                                                  |}
+ "nickname":"NICKNAME"                                            |
+ "new_nickname":"NEW_NICKNAME"                                    |
+ }
+
+  ==> erreur : nom n'existe pas
+
+                                                                | Serveur
+                                                                |{
+                                                                |"response":"modify_nickname_err_non_existing_name"
+                                                                |}
+
+  ==> erreur : surnom n'existe pas
+
+                                                               | Serveur
+                                                               |{
+                                                               |"response":"modify_nickname_err_non_existing_nickname"
+                                                               |}
+
+
+
+############################################################################################################################
+Affichage de la liste des surnoms associée à un nom
+
+Client                                                            | Serveur
+ {                                                                |{
+ "request":"display_nicknames"                                    |"response":"display_nicknames_ok"
+ "name"  :"NAME"                                                  |}
+ }
+
+ ==> erreur : nom n'existe pas
+
+
+                                                                  | Serveur
+                                                                  |{
+                                                                  |"response":"display_nicknames_err_non_existing_name"
+                                                                  |}
+
+############################################################################################################################
+Recherche et affichage du nom associé à un surnom
+
+Client                                                          | Serveur
+{                                                               | {
+"request":"display_name"                                        |   "response":"display_name_ok"
+"nickname":"NIKNAME"                                           | }
+}                                                               |
+
+==> erreur : le surnom n'existe pas, on envoie un message d'erreur .
+
+                                                                | Serveur
+                                                                | {
+                                                                |   "response":"display_name_err_non_existing_nickname"
+                                                                | }
+                                                                |
+
+
+############################################################################################################################
+Afficher la totalité des informations situées sur le serveur
+
+Client                                                          | Serveur
+{                                                               | {
+  "request":"display_all"                                       |   "response":"display_all_ok"
+}                                                               | }
+
+############################################################################################################################
+Se déconnecter
+
+Client                                                          | Serveur
+{                                                               |  {
+  "request":"log_out"                                           |     "response":"log_out_ok"
+}                                                               |  }
+
+############################################################################################################################
+
+Au début on avait pensé utiliser un format pour les messages de notre choix, mais on a décidé à la fin d'utiliser JSON par soucis de praticité.
+Il y existe en effet des parseurs déjà implémentés utilisables pour découper les Strings échangés ; la vérification des erreurs dans les String
+est aussi beaucoup plus facile (les chaînes qui sont dans un mauvais format ne sont pas permises par le compilateur java) ; enfin, une fois les messages parsés et la vérification des erreurs faite, on peut créer des "JSON objects" qui rendent le traitement des données plus facile .
+Une autre raison pour laquelle on a choisi JSON est que souvent on est mené a créer des listes (contenant des surnoms qu'on doit ajouter à quelqu’un par exemple)
+et avec JSON il est possible de générer cette liste directement à partir de la chaine de caractères.
+
+Nous avons de plus décidé d'envoyer des grosses requêtes contenant par exemple une liste entière d'éléments, plutôt que des petites requêtes successives envoyant un élément (nom, surnom, etc) chacune . Ceci a été fait par soucis d'efficacité : en supposant que le client ne va aps envoyer des millier d'éléments à la fois, il nous semble préférable d'effectuer une grosse requête plutôt que pleins de petites .
