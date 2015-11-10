@@ -43,9 +43,9 @@ public class Serveur  extends Liason{
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
+                analyseur.analyser(inputLine);
                 super.send(analyseur);
                 out.println(inputLine);
-                analyseur.analyser(inputLine);
                 System.out.println("serveur : "+inputLine);
             }
         } catch (IOException e) {
